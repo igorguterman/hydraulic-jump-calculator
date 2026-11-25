@@ -41,7 +41,7 @@ def _geometry(y: float, width: float, side_slope: float, section: Section):
         # side_slope is horizontal:vertical (z); width is bottom width.
         area = y * (width + side_slope * y)
         top_width = width + 2.0 * side_slope * y
-        centroid_depth = y * (width + 2.0 * side_slope * y) / (3.0 * (width + side_slope * y))
+        centroid_depth = y * (width / 2.0 + side_slope * y / 3.0) / (width + side_slope * y)
     return area, top_width, centroid_depth
 
 
