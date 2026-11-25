@@ -158,12 +158,14 @@ with tabs[2]:
             rec=row.to_dict()
             try:
                 ri=calculate_jump(float(row.iloc[0]),float(row.iloc[1]),width,section=section,side_slope=z,tailwater=float(row.iloc[2]) or None)
-                rec.update({'Fr₁':ri.froude1,'y₂, м':ri.y2,'ΔE, м':ri.energy_loss,'L, м':ri.jump_length,'Статус':'Прыжок рассчитан'})
+                rec.update({'Fr₁ на входе':ri.froude1,'y₂ для входа, м':ri.y2,'ΔE для входа, м':ri.energy_loss,'L для входа, м':ri.jump_length,'Статус':'Прыжок рассчитан; положение не проверено'})
                 if row.iloc[2]>ri.critical_depth:
                     if supplied>0 and not length_source.strip():
                         raise ValueError('Не указан источник внешней длины.')
                     rb=solve_basin(float(row.iloc[0]),channel,float(row.iloc[1]),float(row.iloc[2]),length,n,supplied_jump_length=supplied or None)
-                    rec.update({'x, м':rb.x_jump,'Запас, м':rb.reserve,'Статус':rb.status,'Комментарий':rb.message})
+                    states={'found':'Положение найдено','outside':'Внутри бассейна не найден','indeterminate':'Положение неопределённо','no_overlap':'Нет общей области ветвей','multiple':'Несколько положений'}
+                    local_length=(supplied or rb.jump.jump_length) if rb.jump else None
+                    rec.update({'x, м':rb.x_jump,'L в месте прыжка, м':local_length,'Запас B−x−L, м':rb.reserve,'Статус':states[rb.status],'Комментарий':rb.message})
             except (ValueError,OverflowError,ZeroDivisionError) as exc:
                 rec['Статус']=str(exc)
             rows.append(rec)
